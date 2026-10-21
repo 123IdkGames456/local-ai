@@ -60,15 +60,16 @@
 const $=id=>document.getElementById(id), $$=sel=>[...document.querySelectorAll(sel)];
 const STORAGE='localai-browser-v2';
 let state={chats:[],activeId:null,systemPrompt:'',temperature:0.7,maxTokens:1024,saveHistory:true,model:''};
-let busy=false,engine=null,toastTimer=null,chosen='Llama-3.2-1B-Instruct-q4f16_1-MLC',webllm=null;
+let busy=false,engine=null,toastTimer=null,chosen='',webllm=null;
 const isPhone=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&Math.min(screen.width,screen.height)<700);
 const memoryGB=Number(navigator.deviceMemory||0);
 const choices=[
-{name:'Llama-3.2-1B-Instruct-q4f16_1-MLC',label:'Small · best starting choice',size:'~1–2 GB storage',phone:true,minMemory:0},
-{name:'Llama-3.2-3B-Instruct-q4f16_1-MLC',label:'More capable · needs more memory',size:'~2–3 GB storage',phone:memoryGB>=6,minMemory:6},
-{name:'Llama-3.1-8B-Instruct-q4f16_1-MLC',label:'Powerful · desktop only',size:'~5–6 GB storage',phone:false,minMemory:8,desktopOnly:true}
+{name:'Llama-3.2-1B-Instruct-q4f16_1-MLC',label:'Mobile · lightest memory use',size:'~1–2 GB storage',phone:true,minMemory:0},
+{name:'Llama-3.2-3B-Instruct-q4f16_1-MLC',label:'PC standard · stronger answers, moderate memory',size:'~2–3 GB storage',phone:false,minMemory:0,desktopOnly:true},
+{name:'Llama-3.1-8B-Instruct-q4f16_1-MLC',label:'PC high-memory · most capable option here',size:'~5–6 GB storage',phone:false,minMemory:8,desktopOnly:true}
 ];
-function availableChoices(){return choices.filter(m=>isPhone?m.phone:(!m.desktopOnly||memoryGB>=8)&&(m.minMemory===0||memoryGB===0||memoryGB>=m.minMemory))}
+chosen=isPhone?'Llama-3.2-1B-Instruct-q4f16_1-MLC':(memoryGB>=8?'Llama-3.1-8B-Instruct-q4f16_1-MLC':'Llama-3.2-3B-Instruct-q4f16_1-MLC');
+function availableChoices(){return choices.filter(m=>isPhone?m.phone:(!m.phone)&&(m.minMemory===0||memoryGB===0||memoryGB>=m.minMemory))}
 function toast(s){$('toast').textContent=s;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),3200)}
 function setStatus(ok,text){$('statusDot').classList.toggle('online',ok);$('statusText').textContent=text}
 function persist(){try{if(state.saveHistory)localStorage.setItem(STORAGE,JSON.stringify(state));else localStorage.removeItem(STORAGE)}catch{toast('Browser storage is full. Export chats to keep a copy.')}}
