@@ -1,43 +1,43 @@
-# Local AI
+# DeepSeek-V3.2-Speciale Chat
 
-A responsive, browser-based chat interface for locally running language models. The frontend connects to an Ollama instance on your own machine and stores chat history and preferences in your browser.
+A responsive, browser-based chat interface designed for a hosted inference server running **DeepSeek-V3.2-Speciale**. This repository is a frontend only: it does not bundle, download, or run model weights.
 
 ## Features
 
-- Responsive dark interface for desktop and mobile
-- Automatically opens a setup/model picker when Ollama is unreachable or no models are installed
-- Choose from model options labelled with estimated storage, capability, and speed
-- Download selected models directly through Ollama's local pull API with progress updates
-- Connect to an Ollama server and discover installed models
-- Chat with local models using Ollama's chat API
-- Saved conversations, per-chat deletion, and JSON export
-- Custom system instructions, creativity, and response-length controls
-- No cloud AI API key and no account required by this frontend
+- One fixed model target: DeepSeek-V3.2-Speciale (no model picker)
+- No local model downloads or WebGPU dependency
+- Connect to a user-configured OpenAI-compatible `/v1/chat/completions` endpoint
+- Browser-stored conversations, per-chat deletion, restart-from-message, and JSON export
+- Sends the full saved conversation as context on each request
+- Does not set an app-level message-count limit or send a `max_tokens` cap
+- Responsive desktop and mobile interface
 
-## Run it
+## Setup
 
-1. Install Ollama from https://ollama.com/ and start it.
-2. Open this site. If it cannot find Ollama or there are no models installed, it opens the model setup menu.
-3. Choose a model by estimated storage and capability, then select **Download selected AI**. The model is downloaded by Ollama to your computer.
-4. If needed, use **Get Ollama runtime** in the menu to install Ollama, then return to the site.
-5. If the browser blocks local requests, configure Ollama's allowed origins for this site's origin and try again.
+1. Arrange access to a hosted inference server that has loaded `deepseek-ai/DeepSeek-V3.2-Speciale` and exposes an OpenAI-compatible chat-completions endpoint.
+2. Open the site and go to **Connection & settings**.
+3. Enter the full endpoint URL, the server API key if required, and the exact model ID exposed by your server.
+4. Save settings, then use **Test connection**.
+5. Start chatting when the test succeeds.
 
-## Browser access / CORS
+The Speciale API announced by DeepSeek in December 2025 used a temporary endpoint that expired on December 15, 2025. This frontend does not assume that temporary endpoint still works. You must provide a currently working hosted server.
 
-Browsers may block requests to Ollama from a page served on another origin. If that happens, configure Ollama's allowed origins for your specific local development or hosted origin, then restart Ollama. Keep the local server private; do not expose it directly to the public internet. A GitHub Pages site is only the frontend and cannot install or run Ollama on visitors' devices.
+## Hosting and security
 
-For a local static server, from this folder run:
+GitHub Pages only serves the website; it cannot host the model or keep a private API key secret. The API key you enter is stored in this browser's local storage and sent to the endpoint you configure. Do not place keys in this repository. Only use a server you trust, and understand that messages sent to a hosted server leave your device and are subject to that server's data handling and access policies.
+
+The endpoint must allow browser requests from the website's origin (CORS). If you control the inference server, configure CORS there. For production use with multiple users, prefer a backend proxy that authenticates requests and keeps provider credentials server-side rather than sharing one key in the browser.
+
+## Chat history and limits
+
+When saving is enabled, conversations are stored in this browser's local storage. The frontend sends the full conversation history for each request and does not add a message-count limit or include a `max_tokens` output limit in its requests. However, browser storage capacity, the inference server's context window, server-side output limits, timeouts, and usage quotas still apply. Very long conversations may exceed the model/server context window. Export conversations periodically for backup.
+
+## Local development
+
+From this folder run:
 
 ```bash
 python -m http.server 8000
 ```
 
 Then open http://localhost:8000.
-
-## Privacy
-
-Chat messages are sent to the Ollama address configured by the user. The frontend does not intentionally send chat content to a hosted AI API. Saved chats and settings are kept in this browser's local storage when chat saving is enabled. Browser storage can be cleared at any time; use Export conversations to make a backup.
-
-## Limitations
-
-This repository contains a frontend, not a bundled model runtime. A browser website cannot install system software or run background installers without user action. Users must install and start Ollama first; after that, this page can download models through Ollama. Model capabilities, refusals, speed, and hardware requirements depend on the chosen model.
