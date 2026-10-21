@@ -5,6 +5,9 @@ A responsive, browser-based chat interface for locally running language models. 
 ## Features
 
 - Responsive dark interface for desktop and mobile
+- Automatically opens a setup/model picker when Ollama is unreachable or no models are installed
+- Choose from model options labelled with estimated storage, capability, and speed
+- Download selected models directly through Ollama's local pull API with progress updates
 - Connect to an Ollama server and discover installed models
 - Chat with local models using Ollama's chat API
 - Saved conversations, per-chat deletion, and JSON export
@@ -14,10 +17,10 @@ A responsive, browser-based chat interface for locally running language models. 
 ## Run it
 
 1. Install Ollama from https://ollama.com/ and start it.
-2. Download a model using the Ollama app or terminal, for example: `ollama pull llama3.2`.
-3. Open `index.html` in a browser or serve the repository with a local static web server.
-4. Open **Models & connection**, set the Ollama address (normally `http://localhost:11434`), and connect.
-5. Choose an installed model and chat.
+2. Open this site. If it cannot find Ollama or there are no models installed, it opens the model setup menu.
+3. Choose a model by estimated storage and capability, then select **Download selected AI**. The model is downloaded by Ollama to your computer.
+4. If needed, use **Get Ollama runtime** in the menu to install Ollama, then return to the site.
+5. If the browser blocks local requests, configure Ollama's allowed origins for this site's origin and try again.
 
 ## Browser access / CORS
 
@@ -37,4 +40,4 @@ Chat messages are sent to the Ollama address configured by the user. The fronten
 
 ## Limitations
 
-This repository contains a frontend, not a bundled model runtime. Users must install and start Ollama (or adapt the frontend to another local runtime) themselves. Model capabilities, refusals, speed, and hardware requirements depend on the chosen model.
+This repository contains a frontend, not a bundled model runtime. A browser website cannot install system software or run background installers without user action. Users must install and start Ollama first; after that, this page can download models through Ollama. Model capabilities, refusals, speed, and hardware requirements depend on the chosen model.
